@@ -1,4 +1,4 @@
-# Kubernetes-cluster-with-worker-node-kubeadm-project
+# Multi-Node Kubernetes Cluster with Kubeadm 1.34 (containerd)
 
 ## For more projects, check out  
 [https://harishnshetty.github.io/projects.html](https://harishnshetty.github.io/projects.html)
