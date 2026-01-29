@@ -256,7 +256,7 @@ sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-addres
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=172.31.22.160 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
 ```
 
->Note: Copy the copy to the notepad that was generated after the init command completion, we will use that later.
+>Note: copy to the notepad that was generated after the init command completion, we will use that later.
 
 10) Prepare `kubeconfig`
 
