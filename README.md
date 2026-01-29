@@ -154,6 +154,9 @@ cat /etc/containerd/config.toml | grep -i SystemdCgroup
 ```bash
 sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
 
+# Enable CRI plugin (remove it from disabled_plugins if present)
+sudo sed -i 's/disabled_plugins = \["cri"\]//g' /etc/containerd/config.toml
+
 sudo systemctl daemon-reload
 sudo systemctl enable --now containerd
 
@@ -241,7 +244,9 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address
 >Note: Copy the copy to the notepad that was generated after the init command completion, we will use that later.
 
 
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=172.31.8.205 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane 
 
+sudo sed -i 's/disabled_plugins = \["cri"\]/# disabled_plugins = \["cri"\]/' /etc/containerd/config.toml
 
 10) Prepare `kubeconfig`
 
@@ -277,7 +282,7 @@ kubectl get nodes
 
 ## 8️⃣ Allow Scheduling Pods on Control Plane (Single Node Only)
 
-kubectl describe deployment flipkart-app-deployment -n flipkart-ns
+kubectl describe deployment flipkart-app-deployment -n flipkart-ns 
 kubectl describe pod flipkart-app-deployment -n flipkart-ns
 
 
@@ -286,6 +291,11 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 ```
 
 
+```bash
+curl -O https://raw.githubusercontent.com/harishnshetty/Kubernetes-cluster-with-worker-node-kubeadm-project/refs/heads/main/worker-setup.sh
+chmod +x worker-setup.sh
+sudo ./worker-setup.sh
+```
 
 ### Perform the below steps on both the worker nodes
 

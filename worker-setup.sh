@@ -22,6 +22,11 @@ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 # ================================
 # Kernel Modules for Kubernetes
 # ================================
+
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
@@ -39,8 +44,8 @@ EOF
 sudo sysctl --system
 
 # Verify Modules
-lsmod | grep br_netfilter
-lsmod | grep overlay
+lsmod | grep br_netfilter || true
+lsmod | grep overlay || true
 
 # ================================
 # Install Containerd
@@ -70,9 +75,15 @@ sudo apt install -y containerd.io
 # ================================
 containerd config default | sudo tee /etc/containerd/config.toml
 
+sudo cp /etc/containerd/config.toml /etc/containerd/config.toml.bak
 sudo sed -i \
   's/SystemdCgroup \= false/SystemdCgroup \= true/g' \
   /etc/containerd/config.toml
+
+
+  sudo sed -i '/\[plugins\."io\.containerd\.grpc\.v1\.cri"\]/a\    sandbox_image = "registry.k8s.io/pause:3.10"' /etc/containerd/config.toml
+
+# Enable CRI plugin (remove it from disabled_plugins if present)
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now containerd
@@ -117,3 +128,5 @@ sudo apt-get install -y \
   --allow-change-held-packages
 
 sudo apt-mark hold kubelet kubeadm kubectl
+
+sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
