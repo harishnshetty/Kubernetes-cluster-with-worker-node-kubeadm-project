@@ -88,6 +88,9 @@ sudo sed -i "/\[plugins\.'io\.containerd\.grpc\.v1\.cri'\]/a\    sandbox_image =
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now containerd
+sudo systemctl start containerd
+sudo chmod 666 /run/containerd/containerd.sock
+sudo systemctl restart containerd
 
 # ================================
 # Install runc
@@ -130,5 +133,6 @@ sudo apt-get install -y \
 
 sudo apt-mark hold kubelet kubeadm kubectl
 
+sudo systemctl enable --now kubelet
 sudo chmod 666 /run/containerd/containerd.sock
 sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward
