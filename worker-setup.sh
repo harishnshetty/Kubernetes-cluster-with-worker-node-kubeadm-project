@@ -82,7 +82,7 @@ sudo sed -i \
   /etc/containerd/config.toml
 
 
-sudo sed -i '/\[plugins\."io\.containerd\.grpc\.v1\.cri"\]/a\    sandbox_image = "registry.k8s.io/pause:3.10"' /etc/containerd/config.toml
+sudo sed -i "/\[plugins\.'io\.containerd\.grpc\.v1\.cri'\]/a\    sandbox_image = 'registry.k8s.io/pause:3.10'" /etc/containerd/config.toml
 
 # Enable CRI plugin (remove it from disabled_plugins if present)
 
@@ -130,4 +130,5 @@ sudo apt-get install -y \
 
 sudo apt-mark hold kubelet kubeadm kubectl
 
+sudo chmod 666 /run/containerd/containerd.sock
 sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables net.ipv4.ip_forward

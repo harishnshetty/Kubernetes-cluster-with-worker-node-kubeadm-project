@@ -213,6 +213,8 @@ sudo apt-cache madison kubeadm
 sudo apt-get install -y kubelet=1.34.3-1.1 kubeadm=1.34.3-1.1 kubectl=1.34.3-1.1 --allow-downgrades --allow-change-held-packages
 sudo apt-mark hold kubelet kubeadm kubectl
 
+sudo systemctl enable --now kubelet
+
 kubeadm version
 kubelet --version
 kubectl version --client
@@ -225,6 +227,8 @@ kubectl version --client
 
 ```bash
 sudo crictl config runtime-endpoint unix:///var/run/containerd/containerd.sock
+
+sudo crictl --runtime-endpoint=unix:///run/containerd/containerd.sock version
 
 crictl info
 
@@ -243,8 +247,6 @@ sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address
 
 >Note: Copy the copy to the notepad that was generated after the init command completion, we will use that later.
 
-
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=172.31.8.205 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane 
 
 sudo sed -i 's/disabled_plugins = \["cri"\]/# disabled_plugins = \["cri"\]/' /etc/containerd/config.toml
 

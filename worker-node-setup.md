@@ -5,6 +5,12 @@ master-1        ssh harish@192.168.64.8
 worker-1        ssh harish@192.168.64.10    
 worker-2        ssh harish@192.168.64.11
 
+```bash
+curl -O https://raw.githubusercontent.com/harishnshetty/Kubernetes-cluster-with-worker-node-kubeadm-project/refs/heads/main/worker-setup.sh
+chmod +x worker-setup.sh
+sudo ./worker-setup.sh
+```
+
 
 ### Run the below steps on the Master VM
 1) SSH into the Master EC2 server
@@ -110,3 +116,4 @@ kubectl version --client
 8) Configure `crictl` to work with `containerd`
 
 `sudo crictl config runtime-endpoint unix:///var/run/containerd/containerd.sock`
+
