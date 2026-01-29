@@ -1,14 +1,17 @@
 # Kubernetes-cluster-with-worker-node-kubeadm-project
 
+## For more projects, check out  
+[https://harishnshetty.github.io/projects.html](https://harishnshetty.github.io/projects.html)
+
+[![Video Tutorial](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm0.jpg)](https://youtu.be/BgyYqUXuHuk?si=Gi6vkxhnVJQBILkG)
+
+[![Channel Link](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm2.jpg)](https://youtu.be/BgyYqUXuHuk?si=Gi6vkxhnVJQBILkG)
+
+
+
 
 sudo hostnamectl set-hostname master
 exec bash
-
-alias c=clear
-
-master-1        ssh harish@192.168.64.8
-worker-1        ssh harish@192.168.64.10    
-worker-2        ssh harish@192.168.64.11
 
 
 
@@ -23,6 +26,10 @@ https://kubernetes.io/docs/reference/networking/ports-and-protocols/
 | TCP      | Inbound   | **10259**     | kube-scheduler          | Self                              |
 | TCP      | Inbound   | **10257**     | kube-controller-manager | Self                              |
 
+[![Control Plane Security Group](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm3-control-sg.png)](https://youtu.be/BgyYqUXuHuk?si=Gi6vkxhnVJQBILkG)
+
+
+
 ## 🖥️ Kubernetes Worker Nodes – Network Ports
 
 | Protocol | Direction | Port / Range    | Purpose           | Used By              |
@@ -32,17 +39,18 @@ https://kubernetes.io/docs/reference/networking/ports-and-protocols/
 | TCP      | Inbound   | **30000–32767** | NodePort Services | All                  |
 | UDP      | Inbound   | **30000–32767** | NodePort Services | All                  |
 
+[![Worker Node Security Group](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm4-worker-sg.png)](https://youtu.be/BgyYqUXuHuk?si=Gi6vkxhnVJQBILkG)
 
 
 
 ### Run the below steps on the Master VM
 1) SSH into the Master EC2 server
 
-### System prep
+### System Update & Base Packages
 
 ```bash
 sudo apt update && sudo apt upgrade -y
-sudo apt-get install -y apt-transport-https ca-certificates curl gpg ncdu net-tools
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg ncdu net-tools 
 ```
 
 
@@ -60,6 +68,7 @@ free -h
 
 
 3) Forwarding IPv4 and letting iptables see bridged traffic
+
 
 ```bash
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
@@ -101,7 +110,7 @@ sysctl net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables ne
 
 4) Install container runtime
 
-## for specific version
+## containerd for specific version
 
 https://github.com/containerd/containerd/releases 
 
@@ -149,16 +158,17 @@ containerd config default | sudo tee /etc/containerd/config.toml
 
 ```bash
 cat /etc/containerd/config.toml | grep -i SystemdCgroup
+
+sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+
+sudo sed -i "/\[plugins\.'io\.containerd\.grpc\.v1\.cri'\]/a\    sandbox_image = 'registry.k8s.io/pause:3.10'" /etc/containerd/config.toml
 ```
 
 ```bash
-sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
-
-# Enable CRI plugin (remove it from disabled_plugins if present)
-sudo sed -i 's/disabled_plugins = \["cri"\]//g' /etc/containerd/config.toml
-
 sudo systemctl daemon-reload
+sudo systemctl start containerd
 sudo systemctl enable --now containerd
+sudo systemctl restart containerd
 
 # Check that containerd service is up and running
 systemctl status containerd
@@ -226,29 +236,27 @@ kubectl version --client
 8) Configure `crictl` to work with `containerd`
 
 ```bash
+sudo chmod 666 /run/containerd/containerd.sock
+
 sudo crictl config runtime-endpoint unix:///var/run/containerd/containerd.sock
 
 sudo crictl --runtime-endpoint=unix:///run/containerd/containerd.sock version
 
 crictl info
-
 ```
 
 9) initialize control plane
 
 ## calico setup  --> ip range is 192.168.0.0/16
 ```bash
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=172.31.33.42 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=172.31.22.160 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
 ```
 ## flannel setup or weavenet setup --> ip range is 10.244.0.0/16
 ```bash
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=172.31.33.42 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=172.31.22.160 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
 ```
 
 >Note: Copy the copy to the notepad that was generated after the init command completion, we will use that later.
-
-
-sudo sed -i 's/disabled_plugins = \["cri"\]/# disabled_plugins = \["cri"\]/' /etc/containerd/config.toml
 
 10) Prepare `kubeconfig`
 
@@ -261,6 +269,8 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
 11) Install calico 
+
+## calico setup  --> ip range is 192.168.0.0/16
 https://docs.tigera.io/calico/latest/getting-started/kubernetes/self-managed-onprem/onpremises
 
 ```bash
@@ -282,36 +292,12 @@ Node should become:
 kubectl get nodes
 ```
 
-## 8️⃣ Allow Scheduling Pods on Control Plane (Single Node Only)
-
-kubectl describe deployment flipkart-app-deployment -n flipkart-ns 
-kubectl describe pod flipkart-app-deployment -n flipkart-ns
-
-
+## Allow Scheduling Pods on Control Plane (Single Node Only)
 ```bash
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 ```
 
 
-```bash
-curl -O https://raw.githubusercontent.com/harishnshetty/Kubernetes-cluster-with-worker-node-kubeadm-project/refs/heads/main/worker-setup.sh
-chmod +x worker-setup.sh
-sudo ./worker-setup.sh
-```
-
-### Perform the below steps on both the worker nodes
-
-- Perform steps 1-8 on both the nodes
-- Run the command generated in step 9 on the Master node which is similar to below
-
-```
-sudo kubeadm join 172.31.71.210:6443 --token xxxxx --discovery-token-ca-cert-hash sha256:xxx
-```
-- If you forgot to copy the command, you can execute below command on master node to generate the join command again
-
-```
-kubeadm token create --print-join-command
-```
 
 ## Validation
 
@@ -337,19 +323,11 @@ Where ens5 is your default interface, you can confirm by running `ifconfig` on a
 This is not the latest version of calico though(v.3.25). This deploys CNI in kube-system NS. 
 
 ---
-
-```bash
-sudo sed -i 's/disabled_plugins = \["cri"\]//g' /etc/containerd/config.toml
-
-
-sudo systemctl restart containerd
-```
-
 # Cleanup the failed attempt
 
 ```bash
 sudo kubeadm reset -f
 sudo rm -rf ~/.kube
 # Retry init
-sudo kubeadm init --kubernetes-version=1.34.0 --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.64.8 --node-name master
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=[IP_ADDRESS] --node-name controlplane
 ```

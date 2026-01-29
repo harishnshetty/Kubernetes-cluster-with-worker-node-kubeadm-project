@@ -5,11 +5,13 @@ master-1        ssh harish@192.168.64.8
 worker-1        ssh harish@192.168.64.10    
 worker-2        ssh harish@192.168.64.11
 
+## Worker Node Setup
 ```bash
 curl -O https://raw.githubusercontent.com/harishnshetty/Kubernetes-cluster-with-worker-node-kubeadm-project/refs/heads/main/worker-setup.sh
 chmod +x worker-setup.sh
 sudo ./worker-setup.sh
 ```
+
 
 
 ### Run the below steps on the Master VM
@@ -117,3 +119,33 @@ kubectl version --client
 
 `sudo crictl config runtime-endpoint unix:///var/run/containerd/containerd.sock`
 
+
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.31.22.160:6443 --token 5onpcu.d8rhceyatl22765h \
+        --discovery-token-ca-cert-hash sha256:a601e2ac5d29f48432375e26fbcea3adab77725c966b68f5b9858560a108fc2a 
+
+
+
+        - If you forgot to copy the command, you can execute below command on master node to generate the join command again
+
+```
+kubeadm token create --print-join-command
+```
