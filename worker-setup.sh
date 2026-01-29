@@ -76,12 +76,13 @@ sudo apt install -y containerd.io
 containerd config default | sudo tee /etc/containerd/config.toml
 
 sudo cp /etc/containerd/config.toml /etc/containerd/config.toml.bak
+
 sudo sed -i \
   's/SystemdCgroup \= false/SystemdCgroup \= true/g' \
   /etc/containerd/config.toml
 
 
-  sudo sed -i '/\[plugins\."io\.containerd\.grpc\.v1\.cri"\]/a\    sandbox_image = "registry.k8s.io/pause:3.10"' /etc/containerd/config.toml
+sudo sed -i '/\[plugins\."io\.containerd\.grpc\.v1\.cri"\]/a\    sandbox_image = "registry.k8s.io/pause:3.10"' /etc/containerd/config.toml
 
 # Enable CRI plugin (remove it from disabled_plugins if present)
 
