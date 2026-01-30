@@ -3,9 +3,9 @@
 ## For more projects, check out  
 [https://harishnshetty.github.io/projects.html](https://harishnshetty.github.io/projects.html)
 
-[![Video Tutorial](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm0.jpg)](https://youtu.be/BgyYqUXuHuk?si=Gi6vkxhnVJQBILkG)
+[![Video Tutorial](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm0.jpg)](https://youtu.be/u4zcPLI-tMs)
 
-[![Channel Link](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm2.jpg)](https://youtu.be/BgyYqUXuHuk?si=Gi6vkxhnVJQBILkG)
+[![Channel Link](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm2.jpg)](https://youtu.be/u4zcPLI-tMs)
 
 
 
@@ -26,7 +26,7 @@ https://kubernetes.io/docs/reference/networking/ports-and-protocols/
 | TCP      | Inbound   | **10259**     | kube-scheduler          | Self                              |
 | TCP      | Inbound   | **10257**     | kube-controller-manager | Self                              |
 
-[![Control Plane Security Group](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm3-control-sg.png)](https://youtu.be/BgyYqUXuHuk?si=Gi6vkxhnVJQBILkG)
+[![Control Plane Security Group](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm3-control-sg.png)](https://youtu.be/u4zcPLI-tMs)
 
 
 
@@ -39,7 +39,7 @@ https://kubernetes.io/docs/reference/networking/ports-and-protocols/
 | TCP      | Inbound   | **30000–32767** | NodePort Services | All                  |
 | UDP      | Inbound   | **30000–32767** | NodePort Services | All                  |
 
-[![Worker Node Security Group](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm4-worker-sg.png)](https://youtu.be/BgyYqUXuHuk?si=Gi6vkxhnVJQBILkG)
+[![Worker Node Security Group](https://github.com/harishnshetty/image-data-project/blob/22ed0e06accf2365a14a6e0a704044c93e16461c/kubeadm4-worker-sg.png)](https://youtu.be/u4zcPLI-tMs)
 
 
 
@@ -152,6 +152,7 @@ sudo apt update
 sudo apt install containerd.io
 ```
 
+
 ```bash
 containerd config default | sudo tee /etc/containerd/config.toml
 ```
@@ -249,11 +250,11 @@ crictl info
 
 ## calico setup  --> ip range is 192.168.0.0/16
 ```bash
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=172.31.22.160 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=172.31.43.1 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
 ```
 ## flannel setup or weavenet setup --> ip range is 10.244.0.0/16
 ```bash
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=172.31.22.160 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=172.31.43.1 --cri-socket unix:///var/run/containerd/containerd.sock --node-name controlplane
 ```
 
 >Note: copy to the notepad that was generated after the init command completion, we will use that later.
